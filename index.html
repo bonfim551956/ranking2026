@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ranking Geral – Óticas Idealize</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Painel de Ranking Geral das Óticas Idealize – desempenho de consultores e lojas em tempo real." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="topbar">
+      <div class="brand">
+        <img src="logo-oticas-idealize.png" alt="Óticas Idealize" class="logo-img" />
+        <div>
+          <h1>Ranking Geral</h1>
+          <p>Consultores e Lojas em tempo real</p>
+        </div>
+      </div>
+      <button class="btn-admin" id="btnAdmin">⚙ Admin</button>
+    </header>
+
+    <!-- ===== MODAL ADMIN ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>⚙ Painel Administrativo</h3>
+          <button class="modal-close" id="modalClose">✕</button>
+        </div>
+
+        <div class="modal-tabs">
+          <button class="tab-btn active" data-tab="fotos">📸 Fotos do Top 3</button>
+          <button class="tab-btn" data-tab="webhook">🔗 Webhook</button>
+        </div>
+
+        <!-- Tab: Fotos -->
+        <div class="tab-content active" id="tab-fotos">
+          <p class="tab-desc">Faça upload das fotos dos 3 primeiros colocados. As fotos ficam salvas no navegador e aparecem automaticamente no pódio.</p>
+          <div class="photo-upload-grid">
+            <div class="photo-slot" data-pos="0">
+              <div class="photo-preview-wrap">
+                <img class="photo-preview" id="preview-0" src="" alt="" />
+                <span class="photo-placeholder">🥇<br/>1º lugar</span>
+              </div>
+              <label class="btn-upload">
+                📷 Escolher foto
+                <input type="file" accept="image/*" data-pos="0" class="file-input" hidden />
+              </label>
+              <button class="btn-remove-photo" data-pos="0">🗑 Remover</button>
+            </div>
+            <div class="photo-slot" data-pos="1">
+              <div class="photo-preview-wrap">
+                <img class="photo-preview" id="preview-1" src="" alt="" />
+                <span class="photo-placeholder">🥈<br/>2º lugar</span>
+              </div>
+              <label class="btn-upload">
+                📷 Escolher foto
+                <input type="file" accept="image/*" data-pos="1" class="file-input" hidden />
+              </label>
+              <button class="btn-remove-photo" data-pos="1">🗑 Remover</button>
+            </div>
+            <div class="photo-slot" data-pos="2">
+              <div class="photo-preview-wrap">
+                <img class="photo-preview" id="preview-2" src="" alt="" />
+                <span class="photo-placeholder">🥉<br/>3º lugar</span>
+              </div>
+              <label class="btn-upload">
+                📷 Escolher foto
+                <input type="file" accept="image/*" data-pos="2" class="file-input" hidden />
+              </label>
+              <button class="btn-remove-photo" data-pos="2">🗑 Remover</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Webhook -->
+        <div class="tab-content" id="tab-webhook">
+          <p class="tab-desc">Configure o webhook da sua plataforma de vendas. Quando uma venda for registrada, o ranking será atualizado automaticamente.</p>
+
+          <div class="webhook-info">
+            <label>URL do seu Webhook (para configurar na plataforma):</label>
+            <div class="webhook-url-box">
+              <code id="webhookUrl">https://www.oticasidealize.online/webhook</code>
+              <button class="btn-copy" id="btnCopyUrl">📋 Copiar</button>
+            </div>
+            <p class="webhook-hint">⚠ Este site é estático (HTML puro). Para receber webhooks em tempo real, você precisa de um backend. Veja as opções abaixo.</p>
+          </div>
+
+          <div class="webhook-options">
+            <h4>💡 Opções para ativar o webhook:</h4>
+
+            <div class="option-card">
+              <strong>Opção 1 — Google Apps Script (gratuito)</strong>
+              <p>Crie um script no Google Apps Script que recebe o POST da sua plataforma e grava na planilha do Google Sheets. O ranking atualiza automaticamente.</p>
+              <a href="https://script.google.com" target="_blank" class="btn-link">Abrir Google Apps Script →</a>
+            </div>
+
+            <div class="option-card">
+              <strong>Opção 2 — Make / Zapier (sem código)</strong>
+              <p>Conecte sua plataforma de vendas ao Google Sheets usando Make (gratuito até 1000 ops/mês) ou Zapier. Sem precisar programar nada.</p>
+              <a href="https://make.com" target="_blank" class="btn-link">Abrir Make →</a>
+            </div>
+
+            <div class="option-card">
+              <strong>Opção 3 — Me informe a plataforma</strong>
+              <p>Se você souber o nome do sistema que usa (ex: Tiny ERP, Bling, sistema próprio), posso gerar o script exato para integração.</p>
+              <div class="inline-input">
+                <input type="text" id="platformName" placeholder="Nome da plataforma..." />
+                <button class="btn-primary" id="btnSavePlatform">Salvar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="webhook-log">
+            <h4>📋 Últimas entradas recebidas (simulação):</h4>
+            <div class="log-box" id="webhookLog">
+              <span class="log-empty">Nenhum webhook recebido ainda.</span>
+            </div>
+            <button class="btn-secondary" id="btnSimulate">▶ Simular entrada de venda</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+    <main class="container">
+
+      <!-- Podio Top 3 -->
+      <section class="podium-section">
+        <div class="section-title-wrap">
+          <h2>🏆 Ranking de Consultores</h2>
+          <span class="live-badge">● Ao vivo</span>
+        </div>
+        <div id="podium" class="podium-wrap">
+          <!-- preenchido via script.js -->
+        </div>
+        <div id="consultores-list" class="cards-grid">
+          <!-- restante (4º em diante) -->
+        </div>
+      </section>
+
+      <!-- Ranking de Lojas -->
+      <section>
+        <div class="section-title-wrap">
+          <h2>🏪 Ranking de Lojas</h2>
+          <span class="live-badge">● Ao vivo</span>
+        </div>
+        <div id="lojas-list" class="cards-grid">
+          <!-- cards preenchidos via script.js -->
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== RODAPÉ ===== -->
+    <footer class="footer">
+      Painel atualizado automaticamente a partir da planilha Idealize Ranking Geral.
+    </footer>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
