@@ -294,29 +294,20 @@ function initAdmin() {
   });
 
   // Copiar URL webhook
-  document.getElementById("btnCopyUrl").addEventListener("click", () => {
-    const url = document.getElementById("webhookUrl").textContent;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = document.getElementById("btnCopyUrl");
-      btn.textContent = "✅ Copiado!";
-      setTimeout(() => (btn.textContent = "📋 Copiar"), 2000);
+  const btnCopy = document.getElementById("btnCopyUrl");
+  if (btnCopy) {
+    btnCopy.addEventListener("click", () => {
+      const url = document.getElementById("webhookUrl").textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        btnCopy.textContent = "✅ Copiado!";
+        setTimeout(() => (btnCopy.textContent = "📋 Copiar"), 2000);
+      });
     });
-  });
-
-  // Salvar plataforma
-  document.getElementById("btnSavePlatform").addEventListener("click", () => {
-    const name = document.getElementById("platformName").value.trim();
-    if (!name) return;
-    localStorage.setItem("idealize_platform", name);
-    alert(`Plataforma "${name}" salva! Informe ao suporte para gerar a integração específica.`);
-  });
-
-  // Preencher nome salvo
-  const saved = localStorage.getItem("idealize_platform");
-  if (saved) document.getElementById("platformName").value = saved;
+  }
 
   // Simular webhook
-  document.getElementById("btnSimulate").addEventListener("click", simulateWebhook);
+  const btnSim = document.getElementById("btnSimulate");
+  if (btnSim) btnSim.addEventListener("click", simulateWebhook);
 }
 
 // ============================================================
@@ -379,4 +370,4 @@ async function init() {
   }
 }
 
-init();
+document.addEventListener("DOMContentLoaded", init);
