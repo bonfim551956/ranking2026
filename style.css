@@ -485,8 +485,100 @@ h2 {
   line-height: 1.6;
 }
 
-/* Upload de fotos */
-.photo-upload-grid {
+/* Avatar nos cards (4º+) */
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.card-avatar,
+.card-avatar-placeholder {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.card-avatar-placeholder {
+  background: linear-gradient(135deg, var(--idealize-teal-light), var(--idealize-teal-dark));
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Instruções de foto no admin */
+.foto-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.instruction-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.step-num {
+  background: var(--idealize-teal);
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.instruction-step strong {
+  font-size: 13px;
+  color: var(--idealize-dark);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.instruction-step p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.foto-example {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 4px;
+}
+
+.foto-example label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.foto-example code {
+  font-size: 11px;
+  color: var(--idealize-teal-dark);
+  word-break: break-all;
+}
+
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;

@@ -45,16 +45,24 @@ function formatPercent(value) {
   return (Number(value) * 100).toFixed(1).replace(".", ",") + "%";
 }
 
-function getSavedPhoto(pos) {
-  return localStorage.getItem(`idealize_photo_${pos}`) || "";
+// Converte link do Google Drive para URL direta de imagem
+function normalizePhotoUrl(url) {
+  if (!url) return "";
+  // Formato: https://drive.google.com/file/d/ID/view → direto
+  const driveMatch = url.match(/\/file\/d\/([\w-]+)/);
+  if (driveMatch) return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+  // Formato: ?id=ID
+  const idMatch = url.match(/[?&]id=([\w-]+)/);
+  if (idMatch) return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+  // URL direta (outro serviço)
+  return url;
 }
 
-function savePhoto(pos, dataUrl) {
-  localStorage.setItem(`idealize_photo_${pos}`, dataUrl);
-}
+// Chave da planilha para buscar foto do consultor por nome
+const _photoMap = {};
 
-function removePhoto(pos) {
-  localStorage.removeItem(`idealize_photo_${pos}`);
+function getPhotoByName(nome) {
+  return _photoMap[nome?.trim?.().toLowerCase()] || "";
 }
 
 // ============================================================
@@ -76,7 +84,7 @@ function renderPodium(top3) {
     const lojaKey = Object.keys(row).find((k) => k.toLowerCase().includes("loja")) || "";
     const percentKey = Object.keys(row).find((k) => k.toLowerCase().includes("%") || k.toLowerCase().includes("entrega")) || Object.keys(row)[2];
 
-    const photo = getSavedPhoto(dataIdx);
+    const photo = getPhotoByName(row[nomeKey]);
     const heightClass = dataIdx === 0 ? "podium-first" : dataIdx === 1 ? "podium-second" : "podium-third";
 
     const item = document.createElement("div");
@@ -86,7 +94,7 @@ function renderPodium(top3) {
     item.innerHTML = `
       <div class="podium-avatar-wrap">
         ${photo
-          ? `<img class="podium-avatar" src="${photo}" alt="${row[nomeKey]}" />`
+          ? `<img class="podium-avatar" src="${photo}" alt="${row[nomeKey]}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="podium-avatar-placeholder" style="display:none">${(row[nomeKey] || "?")[0].toUpperCase()}</div>`
           : `<div class="podium-avatar-placeholder">${(row[nomeKey] || "?")[0].toUpperCase()}</div>`
         }
         <div class="podium-medal medal-${posClass}">${dataIdx === 0 ? "🥇" : dataIdx === 1 ? "🥈" : "🥉"}</div>
@@ -114,6 +122,16 @@ function renderConsultores(data) {
   const nomeKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("consultor")) || "col0";
   const lojaKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("loja")) || "col1";
   const statusKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("status")) || "col5";
+  const fotoKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("foto")) || "";
+
+  // Popula o mapa de fotos por nome
+  if (fotoKey) {
+    data.forEach((row) => {
+      const nome = String(row[nomeKey] || "").trim().toLowerCase();
+      const foto = normalizePhotoUrl(String(row[fotoKey] || "").trim());
+      if (nome && foto) _photoMap[nome] = foto;
+    });
+  }
 
   const sorted = [...data].sort((a, b) => Number(b[percentKey] || 0) - Number(a[percentKey] || 0));
 
@@ -133,6 +151,8 @@ function renderConsultores(data) {
     const realIdx = idx + 3;
     const percent = Number(row[percentKey] || 0);
     const status = String(row[statusKey] || "").toLowerCase();
+    const photo = getPhotoByName(row[nomeKey]);
+    const inicial = (row[nomeKey] || "?")[0].toUpperCase();
 
     const card = document.createElement("article");
     card.className = `card`;
@@ -140,9 +160,15 @@ function renderConsultores(data) {
 
     card.innerHTML = `
       <div class="card-header">
-        <div>
-          <div class="card-title">${row[nomeKey] || "-"}</div>
-          <div class="card-subtitle">${row[lojaKey] || ""}</div>
+        <div class="card-header-left">
+          ${photo
+            ? `<img class="card-avatar" src="${photo}" alt="${row[nomeKey]}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="card-avatar-placeholder" style="display:none">${inicial}</div>`
+            : `<div class="card-avatar-placeholder">${inicial}</div>`
+          }
+          <div>
+            <div class="card-title">${row[nomeKey] || "-"}</div>
+            <div class="card-subtitle">${row[lojaKey] || ""}</div>
+          </div>
         </div>
         <div class="badge-pos">${realIdx + 1}º</div>
       </div>
@@ -218,7 +244,6 @@ function initAdmin() {
 
   btnAdmin.addEventListener("click", () => {
     overlay.classList.add("open");
-    loadPreviewsFromStorage();
   });
 
   btnClose.addEventListener("click", () => overlay.classList.remove("open"));
@@ -233,35 +258,6 @@ function initAdmin() {
       document.querySelectorAll(".tab-content").forEach((t) => t.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
-    });
-  });
-
-  // Upload de fotos
-  document.querySelectorAll(".file-input").forEach((input) => {
-    input.addEventListener("change", (e) => {
-      const pos = parseInt(e.target.dataset.pos);
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const dataUrl = ev.target.result;
-        savePhoto(pos, dataUrl);
-        updatePreview(pos, dataUrl);
-        // Re-renderiza pódio se já tiver dados
-        if (window._lastTop3) renderPodium(window._lastTop3);
-      };
-      reader.readAsDataURL(file);
-    });
-  });
-
-  // Remover fotos
-  document.querySelectorAll(".btn-remove-photo").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const pos = parseInt(btn.dataset.pos);
-      removePhoto(pos);
-      updatePreview(pos, "");
-      if (window._lastTop3) renderPodium(window._lastTop3);
     });
   });
 
@@ -289,27 +285,6 @@ function initAdmin() {
 
   // Simular webhook
   document.getElementById("btnSimulate").addEventListener("click", simulateWebhook);
-}
-
-function updatePreview(pos, src) {
-  const img = document.getElementById(`preview-${pos}`);
-  const placeholder = img.nextElementSibling;
-  if (src) {
-    img.src = src;
-    img.style.display = "block";
-    placeholder.style.display = "none";
-  } else {
-    img.src = "";
-    img.style.display = "none";
-    placeholder.style.display = "flex";
-  }
-}
-
-function loadPreviewsFromStorage() {
-  [0, 1, 2].forEach((pos) => {
-    const photo = getSavedPhoto(pos);
-    updatePreview(pos, photo);
-  });
 }
 
 // ============================================================
