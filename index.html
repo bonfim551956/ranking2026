@@ -7,163 +7,103 @@
     <meta name="description" content="Painel de Ranking Geral das Óticas Idealize – desempenho de consultores e lojas em tempo real." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
 
-    <!-- ===== HEADER ===== -->
+    <div class="noise"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- HEADER -->
     <header class="topbar">
       <div class="brand">
         <img src="logo-oticas-idealize.png" alt="Óticas Idealize" class="logo-img" />
-        <div>
-          <h1>Ranking Geral</h1>
-          <p>Consultores e Lojas em tempo real</p>
+        <div class="brand-text">
+          <span class="brand-eyebrow">Óticas Idealize</span>
+          <h1>RANKING GERAL</h1>
         </div>
       </div>
-      <button class="btn-admin" id="btnAdmin">⚙ Admin</button>
+      <div class="header-right">
+        <div class="live-pill"><span class="live-dot"></span>AO VIVO</div>
+        <button class="btn-admin" id="btnAdmin">⚙</button>
+      </div>
     </header>
 
-    <!-- ===== MODAL ADMIN ===== -->
+    <!-- MODAL ADMIN -->
     <div class="modal-overlay" id="modalOverlay">
       <div class="modal">
         <div class="modal-header">
-          <h3>⚙ Painel Administrativo</h3>
+          <h3>Painel Admin</h3>
           <button class="modal-close" id="modalClose">✕</button>
         </div>
-
         <div class="modal-tabs">
-          <button class="tab-btn active" data-tab="fotos">📸 Fotos do Top 3</button>
+          <button class="tab-btn active" data-tab="fotos">📸 Fotos</button>
           <button class="tab-btn" data-tab="webhook">🔗 Webhook</button>
         </div>
-
-        <!-- Tab: Fotos -->
         <div class="tab-content active" id="tab-fotos">
-          <p class="tab-desc">As fotos dos consultores são carregadas automaticamente a partir da coluna <strong>"Foto"</strong> na planilha do Google Sheets.</p>
-
+          <p class="tab-desc">As fotos são carregadas automaticamente pela coluna <strong>"Foto"</strong> na planilha Google Sheets.</p>
           <div class="foto-instructions">
-            <div class="instruction-step">
-              <span class="step-num">1</span>
-              <div>
-                <strong>Adicione a coluna "Foto" na planilha</strong>
-                <p>Na aba de Consultores, crie uma coluna com o cabeçalho <code>Foto</code>.</p>
-              </div>
-            </div>
-            <div class="instruction-step">
-              <span class="step-num">2</span>
-              <div>
-                <strong>Suba a foto no Google Drive</strong>
-                <p>Faça upload da foto do consultor e clique em <em>Compartilhar → Qualquer pessoa com o link</em>.</p>
-              </div>
-            </div>
-            <div class="instruction-step">
-              <span class="step-num">3</span>
-              <div>
-                <strong>Cole o link na planilha</strong>
-                <p>Cole o link do Drive na coluna Foto, na linha do consultor. O site converte automaticamente para exibir a imagem.</p>
-              </div>
-            </div>
-            <div class="instruction-step">
-              <span class="step-num">4</span>
-              <div>
-                <strong>Pronto!</strong>
-                <p>A foto aparece no pódio (Top 3) e nos cards (4º em diante) sem precisar alterar nada no site.</p>
-              </div>
-            </div>
+            <div class="instruction-step"><span class="step-num">1</span><div><strong>Adicione a coluna "Foto"</strong><p>Na aba Consultores, crie uma coluna com cabeçalho <code>Foto</code>.</p></div></div>
+            <div class="instruction-step"><span class="step-num">2</span><div><strong>Suba a foto no ImgBB</strong><p>Acesse <a href="https://imgbb.com" target="_blank">imgbb.com</a>, faça upload e copie o <em>Direct link</em> (termina em .jpg).</p></div></div>
+            <div class="instruction-step"><span class="step-num">3</span><div><strong>Cole o link na planilha</strong><p>Cole na coluna Foto na linha do consultor.</p></div></div>
+            <div class="instruction-step"><span class="step-num">4</span><div><strong>Pronto!</strong><p>A foto aparece no pódio e nos cards automaticamente.</p></div></div>
           </div>
-
           <div class="foto-example">
-            <label>Exemplo de link aceito:</label>
-            <code>https://drive.google.com/file/d/1AbCdEfGhIjKl/view?usp=sharing</code>
+            <label>Link aceito (ImgBB direct link):</label>
+            <code>https://i.ibb.co/xxxxxxx/foto.jpg</code>
           </div>
-
-          <a href="https://docs.google.com/spreadsheets/d/1hAzsPEoartooj6i-9aq-aAu5xFzOKkBiuUwnao0-JnI" target="_blank" class="btn-primary" style="display:inline-block;margin-top:16px;text-decoration:none;">
-            📊 Abrir planilha →
-          </a>
+          <a href="https://docs.google.com/spreadsheets/d/1hAzsPEoartooj6i-9aq-aAu5xFzOKkBiuUwnao0-JnI" target="_blank" class="btn-primary" style="display:inline-block;margin-top:16px;text-decoration:none;">📊 Abrir planilha →</a>
         </div>
-
-        <!-- Tab: Webhook -->
         <div class="tab-content" id="tab-webhook">
-          <p class="tab-desc">Configure o webhook da sua plataforma de vendas. Quando uma venda for registrada, o ranking será atualizado automaticamente.</p>
-
+          <p class="tab-desc">Integre sua plataforma de vendas para atualização automática.</p>
           <div class="webhook-info">
-            <label>URL do seu Webhook (para configurar na plataforma):</label>
+            <label>URL do Webhook:</label>
             <div class="webhook-url-box">
               <code id="webhookUrl">https://www.oticasidealize.online/webhook</code>
               <button class="btn-copy" id="btnCopyUrl">📋 Copiar</button>
             </div>
-            <p class="webhook-hint">⚠ Este site é estático (HTML puro). Para receber webhooks em tempo real, você precisa de um backend. Veja as opções abaixo.</p>
+            <p class="webhook-hint">⚠ Site estático — precisa de backend para receber webhooks.</p>
           </div>
-
           <div class="webhook-options">
-            <h4>💡 Opções para ativar o webhook:</h4>
-
-            <div class="option-card">
-              <strong>Opção 1 — Google Apps Script (gratuito)</strong>
-              <p>Crie um script no Google Apps Script que recebe o POST da sua plataforma e grava na planilha do Google Sheets. O ranking atualiza automaticamente.</p>
-              <a href="https://script.google.com" target="_blank" class="btn-link">Abrir Google Apps Script →</a>
-            </div>
-
-            <div class="option-card">
-              <strong>Opção 2 — Make / Zapier (sem código)</strong>
-              <p>Conecte sua plataforma de vendas ao Google Sheets usando Make (gratuito até 1000 ops/mês) ou Zapier. Sem precisar programar nada.</p>
-              <a href="https://make.com" target="_blank" class="btn-link">Abrir Make →</a>
-            </div>
-
-            <div class="option-card">
-              <strong>Opção 3 — Me informe a plataforma</strong>
-              <p>Se você souber o nome do sistema que usa (ex: Tiny ERP, Bling, sistema próprio), posso gerar o script exato para integração.</p>
-              <div class="inline-input">
-                <input type="text" id="platformName" placeholder="Nome da plataforma..." />
-                <button class="btn-primary" id="btnSavePlatform">Salvar</button>
-              </div>
-            </div>
+            <div class="option-card"><strong>Opção 1 — Google Apps Script (gratuito)</strong><p>Recebe POST e grava na planilha automaticamente.</p><a href="https://script.google.com" target="_blank" class="btn-link">Abrir →</a></div>
+            <div class="option-card"><strong>Opção 2 — Make / Zapier (sem código)</strong><p>Conecte Acert → Google Sheets sem programar.</p><a href="https://make.com" target="_blank" class="btn-link">Abrir →</a></div>
+            <div class="option-card"><strong>Opção 3 — Export CSV do Acert</strong><p>Exporte o relatório, suba no Drive. Script atualiza a planilha sozinho.</p></div>
           </div>
-
           <div class="webhook-log">
-            <h4>📋 Últimas entradas recebidas (simulação):</h4>
-            <div class="log-box" id="webhookLog">
-              <span class="log-empty">Nenhum webhook recebido ainda.</span>
-            </div>
-            <button class="btn-secondary" id="btnSimulate">▶ Simular entrada de venda</button>
+            <h4>Últimas entradas (simulação):</h4>
+            <div class="log-box" id="webhookLog"><span class="log-empty">Nenhum webhook recebido ainda.</span></div>
+            <button class="btn-secondary" id="btnSimulate">▶ Simular venda</button>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+    <!-- MAIN -->
     <main class="container">
-
-      <!-- Podio Top 3 -->
-      <section class="podium-section">
-        <div class="section-title-wrap">
-          <h2>🏆 Ranking de Consultores</h2>
-          <span class="live-badge">● Ao vivo</span>
+      <section class="section">
+        <div class="section-header">
+          <span class="section-label">CONSULTORES</span>
+          <h2 class="section-title">RANKING DE CONSULTORES</h2>
+          <div class="section-line"></div>
         </div>
-        <div id="podium" class="podium-wrap">
-          <!-- preenchido via script.js -->
-        </div>
-        <div id="consultores-list" class="cards-grid">
-          <!-- restante (4º em diante) -->
-        </div>
+        <div id="podium" class="podium-wrap"></div>
+        <div id="consultores-list" class="cards-grid"></div>
       </section>
 
-      <!-- Ranking de Lojas -->
-      <section>
-        <div class="section-title-wrap">
-          <h2>🏪 Ranking de Lojas</h2>
-          <span class="live-badge">● Ao vivo</span>
+      <section class="section">
+        <div class="section-header">
+          <span class="section-label">LOJAS</span>
+          <h2 class="section-title">RANKING DE LOJAS</h2>
+          <div class="section-line"></div>
         </div>
-        <div id="lojas-list" class="cards-grid">
-          <!-- cards preenchidos via script.js -->
-        </div>
+        <div id="lojas-list" class="cards-grid"></div>
       </section>
     </main>
 
-    <!-- ===== RODAPÉ ===== -->
     <footer class="footer">
-      Painel atualizado automaticamente a partir da planilha Idealize Ranking Geral.
+      Atualizado automaticamente · Planilha Idealize Ranking Geral
     </footer>
 
     <script type="module" src="script.js"></script>
