@@ -14,13 +14,43 @@ async function fetchSheet(gid) {
   const text = await res.text();
   const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
   const cols = json.table.cols.map((c) => c.label);
-  return json.table.rows.map((row) => {
-    const obj = {};
-    row.c.forEach((cell, idx) => {
-      obj[cols[idx] || `col${idx}`] = cell ? cell.v : "";
+
+  return json.table.rows
+    .map((row) => {
+      const obj = {};
+      row.c.forEach((cell, idx) => {
+        // cell.v = valor bruto, cell.f = valor formatado ("91,42%")
+        const raw = cell ? cell.v : "";
+        const fmt = cell ? cell.f : "";
+        obj[cols[idx] || `col${idx}`] = raw;
+        // guarda o formatado também para percentuais
+        if (fmt && String(fmt).includes("%")) {
+          obj[`_fmt_${cols[idx] || `col${idx}`}`] = fmt;
+        }
+      });
+      return obj;
+    })
+    // Remove linhas completamente vazias ou que são cabeçalhos repetidos
+    .filter((row) => {
+      const vals = Object.values(row).filter(v => v !== "" && v !== null);
+      return vals.length > 0;
     });
-    return obj;
-  });
+}
+
+// Converte qualquer formato de percentual para número decimal (0.9142)
+function toDecimal(value) {
+  if (value === "" || value === null || value === undefined) return 0;
+  const n = Number(value);
+  if (!isNaN(n)) {
+    // Se já é decimal (ex: 0.9142), retorna direto
+    // Se parece inteiro > 1 (ex: 91.42), divide por 100
+    return Math.abs(n) <= 1 ? n : n / 100;
+  }
+  // Tenta parsear string "91,42%" ou "91.42%"
+  const str = String(value).replace("%", "").replace(",", ".").trim();
+  const parsed = parseFloat(str);
+  if (!isNaN(parsed)) return Math.abs(parsed) > 1 ? parsed / 100 : parsed;
+  return 0;
 }
 
 // ============================================================
@@ -41,8 +71,10 @@ function getPosLabel(index) {
 }
 
 function formatPercent(value) {
-  if (value === "" || value === null || value === undefined || isNaN(value)) return "-";
-  return (Number(value) * 100).toFixed(1).replace(".", ",") + "%";
+  if (value === "" || value === null || value === undefined) return "-";
+  const d = toDecimal(value);
+  if (isNaN(d)) return "-";
+  return (d * 100).toFixed(1).replace(".", ",") + "%";
 }
 
 // Converte link do Google Drive para URL direta de imagem
@@ -133,7 +165,7 @@ function renderConsultores(data) {
     });
   }
 
-  const sorted = [...data].sort((a, b) => Number(b[percentKey] || 0) - Number(a[percentKey] || 0));
+  const sorted = [...data].sort((a, b) => toDecimal(b[percentKey]) - toDecimal(a[percentKey]));
 
   // Top 3 vai pro pódio
   const top3 = sorted.slice(0, 3);
@@ -149,8 +181,8 @@ function renderConsultores(data) {
 
   rest.forEach((row, idx) => {
     const realIdx = idx + 3;
-    const percent = Number(row[percentKey] || 0);
-    const status = String(row[statusKey] || "").toLowerCase();
+    const percent = toDecimal(row[percentKey]);
+    const status = String(row[statusKey] || "").replace(/[\u{1F300}-\u{1FFFF}]/gu, "").trim().toLowerCase();
     const photo = getPhotoByName(row[nomeKey]);
     const inicial = (row[nomeKey] || "?")[0].toUpperCase();
 
@@ -201,13 +233,13 @@ function renderLojas(data) {
   const lojaKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("loja")) || "col0";
   const statusKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("status")) || "col4";
 
-  const sorted = [...data].sort((a, b) => Number(b[percentKey] || 0) - Number(a[percentKey] || 0));
+  const sorted = [...data].sort((a, b) => toDecimal(b[percentKey]) - toDecimal(a[percentKey]));
 
   sorted.forEach((row, idx) => {
     const posClass = getPositionClass(idx);
     const posLabel = getPosLabel(idx);
-    const percent = Number(row[percentKey] || 0);
-    const status = String(row[statusKey] || "").toLowerCase();
+    const percent = toDecimal(row[percentKey]);
+    const status = String(row[statusKey] || "").replace(/[\u{1F300}-\u{1FFFF}]/gu, "").replace(/[🔴🟢🟡⚪]/g, "").trim().toLowerCase();
 
     const card = document.createElement("article");
     card.className = `card ${posClass}`;
