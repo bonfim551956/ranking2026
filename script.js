@@ -102,7 +102,7 @@ function renderPodium(top3) {
       <div class="podium-name">${row[nomeKey] || "-"}</div>
       <div class="podium-store">${row[lojaKey] || ""}</div>
       <div class="podium-pct">${formatPercent(row[percentKey])}</div>
-      <div class="podium-base ${posClass}"></div>
+      <div class="podium-base ${posClass}" data-pos="${dataIdx === 0 ? '1º' : dataIdx === 1 ? '2º' : '3º'}"></div>
     `;
 
     podium.appendChild(item);
