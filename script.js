@@ -41,11 +41,8 @@ async function fetchSheet(gid) {
 function toDecimal(value) {
   if (value === "" || value === null || value === undefined) return 0;
   const n = Number(value);
-  if (!isNaN(n)) {
-    // Se já é decimal (ex: 0.9142), retorna direto
-    // Se parece inteiro > 1 (ex: 91.42), divide por 100
-    return Math.abs(n) <= 1 ? n : n / 100;
-  }
+  // Se é número puro da planilha (Google Sheets armazena % como decimal: 0.9142, 1.1665)
+  if (!isNaN(n)) return n;
   // Tenta parsear string "91,42%" ou "91.42%"
   const str = String(value).replace("%", "").replace(",", ".").trim();
   const parsed = parseFloat(str);
@@ -75,6 +72,18 @@ function formatPercent(value) {
   const d = toDecimal(value);
   if (isNaN(d)) return "-";
   return (d * 100).toFixed(1).replace(".", ",") + "%";
+}
+
+// Debug: loga os dados brutos no console para diagnóstico
+function debugData(label, data) {
+  if (!data || !data.length) return;
+  const keys = Object.keys(data[0]).filter(k => !k.startsWith("_fmt_"));
+  console.group(`[Idealize] ${label} (${data.length} linhas)`);
+  data.forEach((row, i) => {
+    const vals = keys.map(k => `${k}: ${row[k]}`).join(" | ");
+    console.log(`${i+1}. ${vals}`);
+  });
+  console.groupEnd();
 }
 
 // Converte link do Google Drive para URL direta de imagem
@@ -348,9 +357,11 @@ async function init() {
     ]);
 
     if (consultores && consultores.length) {
+      debugData("CONSULTORES", consultores);
       renderConsultores(consultores);
     }
     if (lojas && lojas.length) {
+      debugData("LOJAS", lojas);
       renderLojas(lojas);
     }
 
