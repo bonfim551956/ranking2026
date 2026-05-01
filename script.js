@@ -13,40 +13,39 @@ async function fetchSheet(gid) {
   const res = await fetch(url);
   const text = await res.text();
   const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
-  const cols = json.table.cols.map((c) => c.label);
 
-  return json.table.rows
+  // Monta colunas a partir dos labels
+  const cols = json.table.cols.map((c) => c.label || "");
+
+  const rows = json.table.rows
     .map((row) => {
       const obj = {};
       row.c.forEach((cell, idx) => {
-        // cell.v = valor bruto, cell.f = valor formatado ("91,42%")
-        const raw = cell ? cell.v : "";
-        const fmt = cell ? cell.f : "";
-        obj[cols[idx] || `col${idx}`] = raw;
-        // guarda o formatado também para percentuais
-        if (fmt && String(fmt).includes("%")) {
-          obj[`_fmt_${cols[idx] || `col${idx}`}`] = fmt;
-        }
+        const key = cols[idx] || `col${idx}`;
+        if (!cell) { obj[key] = ""; return; }
+        // Sempre usa cell.v (valor bruto) — para % o Google retorna 0.9142, 1.1665 etc.
+        obj[key] = cell.v !== null && cell.v !== undefined ? cell.v : "";
+        // Guarda formatado como fallback para exibição
+        if (cell.f) obj[`_f_${key}`] = cell.f;
       });
       return obj;
     })
-    // Remove linhas completamente vazias ou que são cabeçalhos repetidos
-    .filter((row) => {
-      const vals = Object.values(row).filter(v => v !== "" && v !== null);
-      return vals.length > 0;
-    });
+    .filter((row) => Object.values(row).some(v => v !== "" && v !== null));
+
+  console.log(`[Sheet gid=${gid}] ${rows.length} linhas`, rows);
+  return rows;
 }
 
-// Converte qualquer formato de percentual para número decimal (0.9142)
+// Converte percentual para decimal — Google Sheets já entrega como decimal (0.9142, 1.1665)
+// Mas aceita strings também como fallback ("91,42%" → 0.9142)
 function toDecimal(value) {
   if (value === "" || value === null || value === undefined) return 0;
   const n = Number(value);
-  // Se é número puro da planilha (Google Sheets armazena % como decimal: 0.9142, 1.1665)
-  if (!isNaN(n)) return n;
-  // Tenta parsear string "91,42%" ou "91.42%"
+  if (!isNaN(n)) return n; // já é decimal: 0.9142 ou 1.1665
+  // fallback string: "91,42%" ou "91.42%"
   const str = String(value).replace("%", "").replace(",", ".").trim();
   const parsed = parseFloat(str);
-  if (!isNaN(parsed)) return Math.abs(parsed) > 1 ? parsed / 100 : parsed;
+  if (!isNaN(parsed)) return parsed > 1 ? parsed / 100 : parsed;
   return 0;
 }
 
@@ -157,13 +156,18 @@ function renderConsultores(data) {
   const container = document.getElementById("consultores-list");
   container.innerHTML = "";
 
+  const keys = Object.keys(data[0]).filter(k => !k.startsWith("_f_"));
   const percentKey =
-    Object.keys(data[0]).find((k) => k.toLowerCase().includes("%")) ||
-    Object.keys(data[0]).find((k) => k.toLowerCase().includes("entrega")) || "col4";
-  const nomeKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("consultor")) || "col0";
-  const lojaKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("loja")) || "col1";
-  const statusKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("status")) || "col5";
-  const fotoKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("foto")) || "";
+    keys.find((k) => k.toLowerCase().includes("% entrega")) ||
+    keys.find((k) => k.toLowerCase().includes("%")) ||
+    keys.find((k) => k.toLowerCase().includes("entrega")) || "col4";
+  const nomeKey = keys.find((k) => k.toLowerCase().includes("consultor")) || "col0";
+  const lojaKey = keys.find((k) => k.toLowerCase().includes("loja")) || "col1";
+  const statusKey = keys.find((k) => k.toLowerCase().includes("status")) || "col5";
+  const fotoKey = keys.find((k) => k.toLowerCase().includes("foto")) || "";
+
+  console.log(`[Consultores] percentKey="${percentKey}" nomeKey="${nomeKey}"`);
+  console.log(`[Consultores] valores %:`, data.map(r => ({ nome: r[nomeKey], pct: r[percentKey], dec: toDecimal(r[percentKey]) })));
 
   // Popula o mapa de fotos por nome
   if (fotoKey) {
