@@ -257,6 +257,10 @@ h1 {
 .podium-third  .podium-avatar,
 .podium-third  .podium-avatar-placeholder { width: 72px;  height: 72px; }
 
+.podium-avatar {
+  object-position: top center;
+}
+
 .podium-first .podium-avatar,
 .podium-first .podium-avatar-placeholder {
   border: 3px solid var(--gold);
@@ -468,6 +472,7 @@ h1 {
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
+  object-position: top center;
   border: 2px solid var(--border);
 }
 
@@ -822,6 +827,49 @@ h1 {
 }
 
 .btn-link:hover { text-decoration: underline; }
+
+/* ============================================================
+   SUPER META (100%+)
+   ============================================================ */
+.pct-super {
+  color: var(--orange) !important;
+}
+
+.super-meta-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--orange);
+  background: var(--orange-soft);
+  border: 1px solid rgba(247,156,46,0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  letter-spacing: 0.05em;
+  animation: pulse-badge 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+.card-super {
+  border-top: 2px solid rgba(247,156,46,0.5) !important;
+  background: linear-gradient(135deg, #fff 80%, rgba(247,156,46,0.04) 100%);
+}
+
+.card-super .card-title {
+  color: var(--dark);
+}
+
+.status-super {
+  background: rgba(247,156,46,0.1);
+  color: #92400e;
+  border: 1px solid rgba(247,156,46,0.3);
+}
+
+.bar-super {
+  background: linear-gradient(90deg, var(--orange), #f7c56e) !important;
+}
 
 /* ============================================================
    FOOTER
