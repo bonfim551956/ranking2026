@@ -1,916 +1,397 @@
-/* ============================================================
-   DESIGN SYSTEM — IDEALIZE RANKING
-   Light · Premium · Editorial
-   Bebas Neue (display) + Outfit (body)
-   ============================================================ */
-:root {
-  --bg:           #F2F5F7;
-  --bg-card:      #FFFFFF;
-  --bg-card-2:    #F7FAFB;
-  --bg-section:   #FFFFFF;
-
-  --teal:         #009E9A;
-  --teal-dark:    #007B78;
-  --teal-light:   #00C4BC;
-  --teal-soft:    rgba(0,158,154,0.08);
-  --teal-border:  rgba(0,158,154,0.2);
-
-  --orange:       #F79C2E;
-  --orange-soft:  rgba(247,156,46,0.1);
-
-  --gold:         #E6A817;
-  --gold-soft:    rgba(230,168,23,0.12);
-  --gold-border:  rgba(230,168,23,0.3);
-
-  --silver:       #8A9BB0;
-  --silver-soft:  rgba(138,155,176,0.1);
-  --silver-border:rgba(138,155,176,0.3);
-
-  --bronze:       #C07030;
-  --bronze-soft:  rgba(192,112,48,0.1);
-  --bronze-border:rgba(192,112,48,0.3);
-
-  --dark:         #08313A;
-  --text-1:       #08313A;
-  --text-2:       #4A6B73;
-  --text-3:       #8AAAB2;
-  --border:       rgba(8,49,58,0.09);
-  --border-strong:rgba(8,49,58,0.16);
-  --shadow-sm:    0 2px 8px rgba(8,49,58,0.06);
-  --shadow-md:    0 8px 24px rgba(8,49,58,0.09);
-  --shadow-lg:    0 20px 48px rgba(8,49,58,0.12);
-
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body:    'Outfit', sans-serif;
-  --radius:       18px;
-  --radius-sm:    10px;
-}
-
-/* ============================================================
-   RESET + BASE
-   ============================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text-1);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ============================================================
-   HEADER
-   ============================================================ */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 32px;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.logo-img {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-}
-
-.brand-eyebrow {
-  display: block;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--teal);
-  line-height: 1;
-  margin-bottom: 3px;
-}
-
-h1 {
-  font-family: var(--font-display);
-  font-size: 26px;
-  letter-spacing: 0.06em;
-  color: var(--dark);
-  line-height: 1;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.live-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--teal-soft);
-  border: 1px solid var(--teal-border);
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--teal);
-}
-
-.live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--teal);
-  animation: blink 1.4s ease-in-out infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.25; }
-}
-
-.btn-admin {
-  background: var(--bg-card);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  color: var(--text-2);
-  width: 36px;
-  height: 36px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-admin:hover {
-  border-color: var(--teal);
-  color: var(--teal);
-}
-
-/* ============================================================
-   LAYOUT
-   ============================================================ */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 44px 28px 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 64px;
-}
-
-/* ============================================================
-   SECTION HEADERS
-   ============================================================ */
-.section-header {
-  margin-bottom: 32px;
-}
-
-.section-label {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--teal);
-  margin-bottom: 6px;
-  text-transform: uppercase;
-}
-
-.section-title {
-  font-family: var(--font-display);
-  font-size: 48px;
-  letter-spacing: 0.04em;
-  color: var(--dark);
-  line-height: 1;
-}
-
-.section-line {
-  margin-top: 16px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--teal) 0%, rgba(0,158,154,0.1) 50%, transparent 100%);
-  border-radius: 999px;
-}
-
-/* ============================================================
-   PÓDIO
-   ============================================================ */
-.podium-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 24px;
-  margin-bottom: 44px;
-  padding: 0 8px;
-}
-
-.podium-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  max-width: 220px;
-  animation: rise 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.podium-item:nth-child(1) { animation-delay: 0.1s; }
-.podium-item:nth-child(2) { animation-delay: 0s; }
-.podium-item:nth-child(3) { animation-delay: 0.2s; }
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(36px) scale(0.88); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Avatar */
-.podium-avatar-wrap {
-  position: relative;
-  margin-bottom: 14px;
-}
-
-.podium-avatar,
-.podium-avatar-placeholder {
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-}
-
-.podium-first  .podium-avatar,
-.podium-first  .podium-avatar-placeholder { width: 104px; height: 104px; }
-.podium-second .podium-avatar,
-.podium-second .podium-avatar-placeholder { width: 82px;  height: 82px; }
-.podium-third  .podium-avatar,
-.podium-third  .podium-avatar-placeholder { width: 72px;  height: 72px; }
-
-.podium-avatar {
-  object-position: top center;
-}
-
-.podium-first .podium-avatar,
-.podium-first .podium-avatar-placeholder {
-  border: 3px solid var(--gold);
-  box-shadow: 0 0 0 5px var(--gold-soft), var(--shadow-lg);
-}
-
-.podium-second .podium-avatar,
-.podium-second .podium-avatar-placeholder {
-  border: 2px solid var(--silver);
-  box-shadow: 0 0 0 4px var(--silver-soft), var(--shadow-md);
-}
-
-.podium-third .podium-avatar,
-.podium-third .podium-avatar-placeholder {
-  border: 2px solid var(--bronze);
-  box-shadow: 0 0 0 4px var(--bronze-soft), var(--shadow-md);
-}
-
-.podium-avatar-placeholder {
-  background: linear-gradient(135deg, var(--teal-light), var(--teal-dark));
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 0.02em;
-}
-
-.podium-first  .podium-avatar-placeholder { font-size: 44px; }
-.podium-second .podium-avatar-placeholder { font-size: 32px; }
-.podium-third  .podium-avatar-placeholder { font-size: 28px; }
-
-/* Rank badge */
-.podium-rank {
-  position: absolute;
-  bottom: -5px;
-  right: -5px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  border-radius: 999px;
-  padding: 2px 8px;
-  border: 2px solid #fff;
-  box-shadow: var(--shadow-sm);
-}
-
-.podium-rank.gold   { background: var(--gold);   color: #fff; }
-.podium-rank.silver { background: var(--silver); color: #fff; }
-.podium-rank.bronze { background: var(--bronze); color: #fff; }
-
-/* Text */
-.podium-name {
-  font-family: var(--font-display);
-  font-size: 18px;
-  letter-spacing: 0.04em;
-  color: var(--dark);
-  text-align: center;
-  line-height: 1.1;
-}
-
-.podium-first .podium-name { font-size: 22px; }
-
-.podium-store {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-2);
-  text-align: center;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-top: 3px;
-}
-
-.podium-pct {
-  margin-top: 8px;
-  font-family: var(--font-display);
-  font-size: 22px;
-  letter-spacing: 0.04em;
-  color: var(--teal);
-}
-
-.podium-first .podium-pct { font-size: 30px; }
-
-/* Base */
-.podium-base {
-  width: 100%;
-  border-radius: 12px 12px 0 0;
-  margin-top: 14px;
-  position: relative;
-  overflow: hidden;
-}
-
-.podium-first  .podium-base {
-  height: 90px;
-  background: linear-gradient(180deg, var(--gold-soft) 0%, rgba(230,168,23,0.03) 100%);
-  border: 1px solid var(--gold-border);
-  border-bottom: none;
-}
-
-.podium-second .podium-base {
-  height: 62px;
-  background: linear-gradient(180deg, var(--silver-soft) 0%, rgba(138,155,176,0.02) 100%);
-  border: 1px solid var(--silver-border);
-  border-bottom: none;
-}
-
-.podium-third  .podium-base {
-  height: 46px;
-  background: linear-gradient(180deg, var(--bronze-soft) 0%, rgba(192,112,48,0.02) 100%);
-  border: 1px solid var(--bronze-border);
-  border-bottom: none;
-}
-
-/* Accent line top of base */
-.podium-base::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-}
-
-.podium-first  .podium-base::before { background: var(--gold); }
-.podium-second .podium-base::before { background: var(--silver); }
-.podium-third  .podium-base::before { background: var(--bronze); }
-
-/* Position label inside base */
-.podium-base::after {
-  content: attr(data-pos);
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-display);
-  font-size: 28px;
-  letter-spacing: 0.04em;
-  opacity: 0.12;
-  color: var(--dark);
-}
-
-/* ============================================================
-   CARDS (4º+)
-   ============================================================ */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-}
-
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
-  animation: fade-up 0.5s ease both;
-  position: relative;
-  overflow: hidden;
-}
-
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--teal), var(--teal-light));
-  opacity: 0;
-  transition: opacity 0.25s;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-  border-color: var(--border-strong);
-}
-
-.card:hover::after { opacity: 1; }
-
-.card.gold   { border-top: 2px solid var(--gold-border); }
-.card.silver { border-top: 2px solid var(--silver-border); }
-.card.bronze { border-top: 2px solid var(--bronze-border); }
-
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.card-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.card-avatar,
-.card-avatar-placeholder {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  object-fit: cover;
-  object-position: top center;
-  border: 2px solid var(--border);
-}
-
-.card-avatar-placeholder {
-  background: linear-gradient(135deg, var(--teal-light), var(--teal-dark));
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-title {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-1);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-subtitle {
-  font-size: 11px;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-top: 1px;
-}
-
-.badge-pos {
-  flex-shrink: 0;
-  font-family: var(--font-display);
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  color: var(--text-3);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 2px 10px;
-}
-
-.badge-pos.gold   { color: var(--gold);   background: var(--gold-soft);   border-color: var(--gold-border); }
-.badge-pos.silver { color: var(--silver); background: var(--silver-soft); border-color: var(--silver-border); }
-.badge-pos.bronze { color: var(--bronze); background: var(--bronze-soft); border-color: var(--bronze-border); }
-
-.meta-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  color: var(--text-2);
-}
-
-.meta-row strong {
-  color: var(--text-1);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.progress-bar-bg {
-  width: 100%;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--bg);
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--teal-dark), var(--teal-light));
-  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.status-ok {
-  background: rgba(21,128,61,0.08);
-  color: #15803d;
-  border: 1px solid rgba(21,128,61,0.18);
-}
-
-.status-bad {
-  background: rgba(185,28,28,0.07);
-  color: #b91c1c;
-  border: 1px solid rgba(185,28,28,0.15);
-}
-
-/* ============================================================
-   MODAL
-   ============================================================ */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(8,49,58,0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  width: 100%;
-  max-width: 600px;
-  max-height: 88vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  animation: modal-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
-}
-
-@keyframes modal-in {
-  from { opacity: 0; transform: scale(0.9) translateY(16px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 24px 0;
-}
-
-.modal-header h3 {
-  font-family: var(--font-display);
-  font-size: 24px;
-  letter-spacing: 0.06em;
-  color: var(--dark);
-}
-
-.modal-close {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--text-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.modal-close:hover { background: var(--border); color: var(--dark); }
-
-.modal-tabs {
-  display: flex;
-  gap: 8px;
-  padding: 16px 24px 0;
-}
-
-.tab-btn {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 7px 16px;
-  font-size: 12px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  color: var(--text-2);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tab-btn.active {
-  background: var(--dark);
-  border-color: var(--dark);
-  color: #fff;
-}
-
-.tab-content { display: none; padding: 20px 24px 24px; }
-.tab-content.active { display: block; }
-
-.tab-desc { font-size: 13px; color: var(--text-2); margin-bottom: 18px; line-height: 1.65; }
-.tab-desc strong { color: var(--dark); }
-
-.foto-instructions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-
-.instruction-step {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
-}
-
-.step-num {
-  background: var(--teal);
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 14px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.instruction-step strong { font-size: 13px; color: var(--dark); display: block; margin-bottom: 3px; }
-.instruction-step p { font-size: 12px; color: var(--text-2); line-height: 1.55; }
-.instruction-step a { color: var(--teal); }
-.instruction-step code {
-  background: var(--teal-soft);
-  color: var(--teal-dark);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 11px;
-}
-
-.foto-example {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-
-.foto-example label { display: block; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
-.foto-example code { font-size: 12px; color: var(--teal-dark); word-break: break-all; }
-
-.webhook-info { margin-bottom: 18px; }
-.webhook-info label { display: block; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-
-.webhook-url-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 14px;
-}
-
-.webhook-url-box code { flex: 1; font-size: 12px; color: var(--teal-dark); word-break: break-all; }
-
-.webhook-hint {
-  margin-top: 8px;
-  font-size: 11px;
-  color: #92400e;
-  background: rgba(247,156,46,0.08);
-  border: 1px solid rgba(247,156,46,0.25);
-  border-radius: 8px;
-  padding: 8px 12px;
-}
-
-.webhook-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-
-.option-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-
-.option-card strong { display: block; font-size: 13px; color: var(--dark); margin-bottom: 4px; }
-.option-card p { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 6px; }
-
-.webhook-log h4 { font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-
-.log-box {
-  background: var(--dark);
-  border-radius: 10px;
-  padding: 12px;
-  min-height: 80px;
-  max-height: 180px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.log-empty { color: #3D5A63; font-size: 12px; }
-.log-entry { font-size: 12px; color: #00c47a; font-family: monospace; line-height: 1.5; }
-.log-time { color: #4A6B73; margin-right: 8px; }
-
-/* Buttons */
-.btn-primary {
-  background: var(--teal);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 9px 18px;
-  font-size: 13px;
-  font-weight: 700;
-  font-family: var(--font-body);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-primary:hover { background: var(--teal-dark); box-shadow: 0 4px 16px rgba(0,158,154,0.3); }
-
-.btn-secondary {
-  background: var(--bg);
-  color: var(--text-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: var(--font-body);
-  cursor: pointer;
-  margin-top: 10px;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover { background: var(--border); color: var(--dark); }
-
-.btn-copy {
-  background: var(--teal-soft);
-  color: var(--teal-dark);
-  border: 1px solid var(--teal-border);
-  border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--font-body);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.btn-copy:hover { background: var(--teal); color: #fff; }
-
-.btn-link {
-  font-size: 12px;
-  color: var(--teal);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.btn-link:hover { text-decoration: underline; }
-
-/* ============================================================
-   SUPER META (100%+)
-   ============================================================ */
-.pct-super {
-  color: var(--orange) !important;
-}
-
-.super-meta-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--orange);
-  background: var(--orange-soft);
-  border: 1px solid rgba(247,156,46,0.3);
-  border-radius: 999px;
-  padding: 3px 10px;
-  letter-spacing: 0.05em;
-  animation: pulse-badge 1.8s ease-in-out infinite;
-}
-
-@keyframes pulse-badge {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.6; }
-}
-
-.card-super {
-  border-top: 2px solid rgba(247,156,46,0.5) !important;
-  background: linear-gradient(135deg, #fff 80%, rgba(247,156,46,0.04) 100%);
-}
-
-.card-super .card-title {
-  color: var(--dark);
-}
-
-.status-super {
-  background: rgba(247,156,46,0.1);
-  color: #92400e;
-  border: 1px solid rgba(247,156,46,0.3);
-}
-
-.bar-super {
-  background: linear-gradient(90deg, var(--orange), #f7c56e) !important;
-}
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
-.footer {
-  text-align: center;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  padding: 20px 0 32px;
-  border-top: 1px solid var(--border);
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 640px) {
-  .topbar { padding: 12px 16px; }
-  h1 { font-size: 20px; }
-  .section-title { font-size: 34px; }
-
-  .podium-wrap { gap: 10px; }
-  .podium-item { max-width: 110px; }
-
-  .podium-first  .podium-avatar,
-  .podium-first  .podium-avatar-placeholder { width: 76px; height: 76px; }
-  .podium-second .podium-avatar,
-  .podium-second .podium-avatar-placeholder { width: 60px; height: 60px; }
-  .podium-third  .podium-avatar,
-  .podium-third  .podium-avatar-placeholder { width: 52px; height: 52px; }
-
-  .podium-first  .podium-avatar-placeholder { font-size: 30px; }
-  .podium-second .podium-avatar-placeholder { font-size: 22px; }
-  .podium-third  .podium-avatar-placeholder { font-size: 20px; }
-
-  .podium-name       { font-size: 14px; }
-  .podium-first .podium-name { font-size: 16px; }
-  .podium-pct        { font-size: 16px; }
-  .podium-first .podium-pct { font-size: 22px; }
-
-  .container { padding: 28px 14px 60px; gap: 48px; }
-  .modal-tabs { flex-wrap: wrap; }
-}
+// ============================================================
+// CONFIG
+// ============================================================
+const SHEET_ID = "1hAzsPEoartooj6i-9aq-aAu5xFzOKkBiuUwnao0-JnI";
+const GID_CONSULTORES = "1717862999";
+const GID_LOJAS = "0";
+
+// ============================================================
+// FETCH PLANILHA
+// ============================================================
+async function fetchSheet(gid) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
+
+  // Monta colunas a partir dos labels
+  const cols = json.table.cols.map((c) => c.label || "");
+
+  const rows = json.table.rows
+    .map((row) => {
+      const obj = {};
+      row.c.forEach((cell, idx) => {
+        const key = cols[idx] || `col${idx}`;
+        if (!cell) { obj[key] = ""; return; }
+        // Sempre usa cell.v (valor bruto) — para % o Google retorna 0.9142, 1.1665 etc.
+        obj[key] = cell.v !== null && cell.v !== undefined ? cell.v : "";
+        // Guarda formatado como fallback para exibição
+        if (cell.f) obj[`_f_${key}`] = cell.f;
+      });
+      return obj;
+    })
+    .filter((row) => Object.values(row).some(v => v !== "" && v !== null));
+
+  console.log(`[Sheet gid=${gid}] ${rows.length} linhas`, rows);
+  return rows;
+}
+
+// Converte percentual para decimal — Google Sheets já entrega como decimal (0.9142, 1.1665)
+// Mas aceita strings também como fallback ("91,42%" → 0.9142)
+function toDecimal(value) {
+  if (value === "" || value === null || value === undefined) return 0;
+  const n = Number(value);
+  if (!isNaN(n)) return n; // já é decimal: 0.9142 ou 1.1665
+  // fallback string: "91,42%" ou "91.42%"
+  const str = String(value).replace("%", "").replace(",", ".").trim();
+  const parsed = parseFloat(str);
+  if (!isNaN(parsed)) return parsed > 1 ? parsed / 100 : parsed;
+  return 0;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getPositionClass(index) {
+  if (index === 0) return "gold";
+  if (index === 1) return "silver";
+  if (index === 2) return "bronze";
+  return "";
+}
+
+function getPosLabel(index) {
+  if (index === 0) return "🥇 1º";
+  if (index === 1) return "🥈 2º";
+  if (index === 2) return "🥉 3º";
+  return `${index + 1}º`;
+}
+
+function formatPercent(value) {
+  if (value === "" || value === null || value === undefined) return "-";
+  const d = toDecimal(value);
+  if (isNaN(d)) return "-";
+  return (d * 100).toFixed(1).replace(".", ",") + "%";
+}
+
+// Debug: loga os dados brutos no console para diagnóstico
+function debugData(label, data) {
+  if (!data || !data.length) return;
+  const keys = Object.keys(data[0]).filter(k => !k.startsWith("_fmt_"));
+  console.group(`[Idealize] ${label} (${data.length} linhas)`);
+  data.forEach((row, i) => {
+    const vals = keys.map(k => `${k}: ${row[k]}`).join(" | ");
+    console.log(`${i+1}. ${vals}`);
+  });
+  console.groupEnd();
+}
+
+// Converte link do Google Drive para URL direta de imagem
+function normalizePhotoUrl(url) {
+  if (!url) return "";
+  // Formato: https://drive.google.com/file/d/ID/view → direto
+  const driveMatch = url.match(/\/file\/d\/([\w-]+)/);
+  if (driveMatch) return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+  // Formato: ?id=ID
+  const idMatch = url.match(/[?&]id=([\w-]+)/);
+  if (idMatch) return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+  // URL direta (outro serviço)
+  return url;
+}
+
+// Chave da planilha para buscar foto do consultor por nome
+const _photoMap = {};
+
+function getPhotoByName(nome) {
+  return _photoMap[nome?.trim?.().toLowerCase()] || "";
+}
+
+// ============================================================
+// PÓDIO TOP 3
+// ============================================================
+function renderPodium(top3) {
+  const podium = document.getElementById("podium");
+  podium.innerHTML = "";
+
+  // Ordem visual: 2º | 1º | 3º
+  const visualOrder = [1, 0, 2];
+
+  visualOrder.forEach((dataIdx) => {
+    const row = top3[dataIdx];
+    if (!row) return;
+
+    const rowKeys = Object.keys(row).filter(k => !k.startsWith("_f_"));
+    const posClass = getPositionClass(dataIdx);
+    const nomeKey = rowKeys.find((k) => k.toLowerCase().includes("consultor")) || rowKeys[0];
+    const lojaKey = rowKeys.find((k) => k.toLowerCase().includes("loja")) || "";
+    const percentKey = rowKeys.find((k) => k.toLowerCase().includes("% entrega")) ||
+                       rowKeys.find((k) => k.toLowerCase().includes("%")) ||
+                       rowKeys.find((k) => k.toLowerCase().includes("entrega")) || rowKeys[2];
+
+    const photo = getPhotoByName(row[nomeKey]);
+    const heightClass = dataIdx === 0 ? "podium-first" : dataIdx === 1 ? "podium-second" : "podium-third";
+    const pct = toDecimal(row[percentKey]);
+    const superMeta = pct >= 1;
+
+    const item = document.createElement("div");
+    item.className = `podium-item ${posClass} ${heightClass}`;
+    item.style.animationDelay = `${dataIdx * 0.1}s`;
+
+    item.innerHTML = `
+      <div class="podium-avatar-wrap">
+        ${photo
+          ? `<img class="podium-avatar" src="${photo}" alt="${row[nomeKey]}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="podium-avatar-placeholder" style="display:none">${(row[nomeKey] || "?")[0].toUpperCase()}</div>`
+          : `<div class="podium-avatar-placeholder">${(row[nomeKey] || "?")[0].toUpperCase()}</div>`
+        }
+        <div class="podium-rank ${posClass}">${dataIdx === 0 ? "1º" : dataIdx === 1 ? "2º" : "3º"}</div>
+      </div>
+      <div class="podium-name">${row[nomeKey] || "-"}</div>
+      <div class="podium-store">${row[lojaKey] || ""}</div>
+      <div class="podium-pct ${superMeta ? "pct-super" : ""}">${formatPercent(row[percentKey])}</div>
+      ${superMeta ? `<div class="super-meta-badge">🔥 SUPER META</div>` : ""}
+      <div class="podium-base ${posClass}" data-pos="${dataIdx === 0 ? '1º' : dataIdx === 1 ? '2º' : '3º'}"></div>
+    `;
+
+    podium.appendChild(item);
+  });
+}
+
+// ============================================================
+// CONSULTORES (4º em diante)
+// ============================================================
+function renderConsultores(data) {
+  const container = document.getElementById("consultores-list");
+  container.innerHTML = "";
+
+  const keys = Object.keys(data[0]).filter(k => !k.startsWith("_f_"));
+  const percentKey =
+    keys.find((k) => k.toLowerCase().includes("% entrega")) ||
+    keys.find((k) => k.toLowerCase().includes("%")) ||
+    keys.find((k) => k.toLowerCase().includes("entrega")) || "col4";
+  const nomeKey = keys.find((k) => k.toLowerCase().includes("consultor")) || "col0";
+  const lojaKey = keys.find((k) => k.toLowerCase().includes("loja")) || "col1";
+  const statusKey = keys.find((k) => k.toLowerCase().includes("status")) || "col5";
+  const fotoKey = keys.find((k) => k.toLowerCase().includes("foto")) || "";
+
+  console.log(`[Consultores] percentKey="${percentKey}" nomeKey="${nomeKey}"`);
+  console.log(`[Consultores] valores %:`, data.map(r => ({ nome: r[nomeKey], pct: r[percentKey], dec: toDecimal(r[percentKey]) })));
+
+  // Popula o mapa de fotos por nome
+  if (fotoKey) {
+    data.forEach((row) => {
+      const nome = String(row[nomeKey] || "").trim().toLowerCase();
+      const foto = normalizePhotoUrl(String(row[fotoKey] || "").trim());
+      if (nome && foto) _photoMap[nome] = foto;
+    });
+  }
+
+  const sorted = [...data].sort((a, b) => toDecimal(b[percentKey]) - toDecimal(a[percentKey]));
+
+  // Top 3 vai pro pódio
+  const top3 = sorted.slice(0, 3);
+  renderPodium(top3);
+
+  // 4º em diante ficam nos cards
+  const rest = sorted.slice(3);
+
+  if (rest.length === 0) {
+    container.innerHTML = `<p class="rest-empty">Apenas os 3 primeiros colocados este período.</p>`;
+    return;
+  }
+
+  rest.forEach((row, idx) => {
+    const realIdx = idx + 3;
+    const percent = toDecimal(row[percentKey]);
+    const superMeta = percent >= 1;
+    const status = String(row[statusKey] || "").replace(/[\u{1F300}-\u{1FFFF}]/gu, "").replace(/[🔴🟢🟡⚪🔥]/g, "").trim().toLowerCase();
+    const photo = getPhotoByName(row[nomeKey]);
+    const inicial = (row[nomeKey] || "?")[0].toUpperCase();
+
+    const card = document.createElement("article");
+    card.className = `card ${superMeta ? "card-super" : ""}`;
+    card.style.animationDelay = `${idx * 0.05}s`;
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-header-left">
+          ${photo
+            ? `<img class="card-avatar" src="${photo}" alt="${row[nomeKey]}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="card-avatar-placeholder" style="display:none">${inicial}</div>`
+            : `<div class="card-avatar-placeholder">${inicial}</div>`
+          }
+          <div>
+            <div class="card-title">${row[nomeKey] || "-"}</div>
+            <div class="card-subtitle">${row[lojaKey] || ""}</div>
+          </div>
+        </div>
+        <div class="badge-pos">${realIdx + 1}º</div>
+      </div>
+      <div class="meta-row">
+        <span>Entrega:</span>
+        <span><strong class="${superMeta ? "pct-super" : ""}">${formatPercent(row[percentKey])}</strong></span>
+      </div>
+      <div class="progress-wrapper">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill ${superMeta ? "bar-super" : ""}" style="width:${Math.min(100, percent * 100)}%;"></div>
+        </div>
+      </div>
+      <div class="status-chip ${superMeta ? "status-super" : percent >= 1 ? "status-ok" : "status-bad"}">
+        ${superMeta ? "🔥 " : ""}${status || (superMeta ? "super meta!" : percent >= 1 ? "bateu a meta" : "não bateu")}
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ============================================================
+// LOJAS
+// ============================================================
+function renderLojas(data) {
+  const container = document.getElementById("lojas-list");
+  container.innerHTML = "";
+
+  const percentKey =
+    Object.keys(data[0]).find((k) => k.toLowerCase().includes("%")) ||
+    Object.keys(data[0]).find((k) => k.toLowerCase().includes("entrega")) || "col3";
+  const lojaKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("loja")) || "col0";
+  const statusKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("status")) || "col4";
+
+  const sorted = [...data].sort((a, b) => toDecimal(b[percentKey]) - toDecimal(a[percentKey]));
+
+  sorted.forEach((row, idx) => {
+    const posClass = getPositionClass(idx);
+    const posLabel = getPosLabel(idx);
+    const percent = toDecimal(row[percentKey]);
+    const status = String(row[statusKey] || "").replace(/[\u{1F300}-\u{1FFFF}]/gu, "").replace(/[🔴🟢🟡⚪]/g, "").trim().toLowerCase();
+
+    const card = document.createElement("article");
+    card.className = `card ${posClass}`;
+    card.style.animationDelay = `${idx * 0.05}s`;
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">${row[lojaKey] || "-"}</div>
+        <div class="badge-pos ${posClass}">${posLabel}</div>
+      </div>
+      <div class="meta-row">
+        <span>Entrega:</span>
+        <span><strong>${formatPercent(row[percentKey])}</strong></span>
+      </div>
+      <div class="progress-wrapper">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width:${Math.min(140, Math.max(0, percent * 100))}%;"></div>
+        </div>
+      </div>
+      <div class="status-chip ${percent >= 1 ? "status-ok" : "status-bad"}">${status || (percent >= 1 ? "meta batida" : "abaixo da meta")}</div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ============================================================
+// ADMIN MODAL
+// ============================================================
+function initAdmin() {
+  const overlay = document.getElementById("modalOverlay");
+  const btnAdmin = document.getElementById("btnAdmin");
+  const btnClose = document.getElementById("modalClose");
+
+  btnAdmin.addEventListener("click", () => {
+    overlay.classList.add("open");
+  });
+
+  btnClose.addEventListener("click", () => overlay.classList.remove("open"));
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.classList.remove("open");
+  });
+
+  // Tabs
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach((t) => t.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+    });
+  });
+
+  // Copiar URL webhook
+  const btnCopy = document.getElementById("btnCopyUrl");
+  if (btnCopy) {
+    btnCopy.addEventListener("click", () => {
+      const url = document.getElementById("webhookUrl").textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        btnCopy.textContent = "✅ Copiado!";
+        setTimeout(() => (btnCopy.textContent = "📋 Copiar"), 2000);
+      });
+    });
+  }
+
+  // Simular webhook
+  const btnSim = document.getElementById("btnSimulate");
+  if (btnSim) btnSim.addEventListener("click", simulateWebhook);
+}
+
+// ============================================================
+// SIMULAÇÃO WEBHOOK
+// ============================================================
+function simulateWebhook() {
+  const log = document.getElementById("webhookLog");
+  const names = ["Ana Lima", "Carlos Souza", "Maria Oliveira", "João Pedro"];
+  const stores = ["Loja Centro", "Loja Santos", "Loja Cubatão"];
+  const name = names[Math.floor(Math.random() * names.length)];
+  const store = stores[Math.floor(Math.random() * stores.length)];
+  const value = (Math.random() * 2000 + 200).toFixed(2);
+  const now = new Date().toLocaleTimeString("pt-BR");
+
+  const entry = document.createElement("div");
+  entry.className = "log-entry";
+  entry.innerHTML = `<span class="log-time">${now}</span> <strong>${name}</strong> (${store}) — R$ ${Number(value).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+
+  const empty = log.querySelector(".log-empty");
+  if (empty) empty.remove();
+
+  log.prepend(entry);
+
+  // Máximo 8 entradas
+  while (log.children.length > 8) log.removeChild(log.lastChild);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  initAdmin();
+
+  try {
+    const [consultores, lojas] = await Promise.all([
+      fetchSheet(GID_CONSULTORES),
+      fetchSheet(GID_LOJAS),
+    ]);
+
+    if (consultores && consultores.length) {
+      debugData("CONSULTORES", consultores);
+      renderConsultores(consultores);
+    }
+    if (lojas && lojas.length) {
+      debugData("LOJAS", lojas);
+      renderLojas(lojas);
+    }
+
+    // Atualiza a cada 5 minutos
+    setInterval(async () => {
+      const [c, l] = await Promise.all([
+        fetchSheet(GID_CONSULTORES),
+        fetchSheet(GID_LOJAS),
+      ]);
+      if (c && c.length) renderConsultores(c);
+      if (l && l.length) renderLojas(l);
+    }, 5 * 60 * 1000);
+
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao carregar dados do ranking. Confira se a planilha está pública.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
