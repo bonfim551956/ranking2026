@@ -258,7 +258,7 @@ h1 {
 .podium-third  .podium-avatar-placeholder { width: 72px;  height: 72px; }
 
 .podium-avatar {
-  object-position: top center;
+  object-position: center 15%;
 }
 
 .podium-first .podium-avatar,
@@ -472,7 +472,7 @@ h1 {
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
-  object-position: top center;
+  object-position: center 15%;
   border: 2px solid var(--border);
 }
 
