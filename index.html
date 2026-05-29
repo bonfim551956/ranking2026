@@ -23,57 +23,8 @@
       </div>
       <div class="header-right">
         <div class="live-pill"><span class="live-dot"></span>AO VIVO</div>
-        <button class="btn-admin" id="btnAdmin">⚙</button>
       </div>
     </header>
-
-    <!-- MODAL ADMIN -->
-    <div class="modal-overlay" id="modalOverlay">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>Painel Admin</h3>
-          <button class="modal-close" id="modalClose">✕</button>
-        </div>
-        <div class="modal-tabs">
-          <button class="tab-btn active" data-tab="fotos">📸 Fotos</button>
-          <button class="tab-btn" data-tab="webhook">🔗 Webhook</button>
-        </div>
-        <div class="tab-content active" id="tab-fotos">
-          <p class="tab-desc">As fotos são carregadas automaticamente pela coluna <strong>"Foto"</strong> na planilha Google Sheets.</p>
-          <div class="foto-instructions">
-            <div class="instruction-step"><span class="step-num">1</span><div><strong>Adicione a coluna "Foto"</strong><p>Na aba Consultores, crie uma coluna com cabeçalho <code>Foto</code>.</p></div></div>
-            <div class="instruction-step"><span class="step-num">2</span><div><strong>Suba a foto no Cloudinary</strong><p>Acesse <a href="https://cloudinary.com" target="_blank">cloudinary.com</a>, faça upload e monte a URL com <code>w_400,h_400,c_fill,g_face</code>.</p></div></div>
-            <div class="instruction-step"><span class="step-num">3</span><div><strong>Cole o link na planilha</strong><p>Cole na coluna Foto na linha do consultor.</p></div></div>
-            <div class="instruction-step"><span class="step-num">4</span><div><strong>Pronto!</strong><p>A foto aparece no pódio e nos cards automaticamente.</p></div></div>
-          </div>
-          <div class="foto-example">
-            <label>Formato do link (Cloudinary):</label>
-            <code>https://res.cloudinary.com/dmqrq9gif/image/upload/w_400,h_400,c_fill,g_face/v.../foto.jpg</code>
-          </div>
-        </div>
-        <div class="tab-content" id="tab-webhook">
-          <p class="tab-desc">Integre sua plataforma de vendas para atualização automática.</p>
-          <div class="webhook-info">
-            <label>URL do Webhook:</label>
-            <div class="webhook-url-box">
-              <code id="webhookUrl">https://www.oticasidealize.online/webhook</code>
-              <button class="btn-copy" id="btnCopyUrl">📋 Copiar</button>
-            </div>
-            <p class="webhook-hint">⚠ Site estático — precisa de backend para receber webhooks.</p>
-          </div>
-          <div class="webhook-options">
-            <div class="option-card"><strong>Opção 1 — Google Apps Script (gratuito)</strong><p>Recebe POST e grava na planilha automaticamente.</p><a href="https://script.google.com" target="_blank" class="btn-link">Abrir →</a></div>
-            <div class="option-card"><strong>Opção 2 — Make / Zapier (sem código)</strong><p>Conecte Acert → Google Sheets sem programar.</p><a href="https://make.com" target="_blank" class="btn-link">Abrir →</a></div>
-            <div class="option-card"><strong>Opção 3 — Export CSV do Acert</strong><p>Exporte o relatório, suba no Drive. Script atualiza a planilha sozinho.</p></div>
-          </div>
-          <div class="webhook-log">
-            <h4>Últimas entradas (simulação):</h4>
-            <div class="log-box" id="webhookLog"><span class="log-empty">Nenhum webhook recebido ainda.</span></div>
-            <button class="btn-secondary" id="btnSimulate">▶ Simular venda</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- MAIN -->
     <main class="container">
