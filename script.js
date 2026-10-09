@@ -1,57 +1,69 @@
 // ============================================================
-// CONFIG
+// CONFIG — fonte de dados: Sistema de Metas (Supabase)
+// Antes: planilha do Google Sheets. Agora o ranking vem direto
+// do metas.oticasidealize.online, em tempo real.
 // ============================================================
-const SHEET_ID = "1hAzsPEoartooj6i-9aq-aAu5xFzOKkBiuUwnao0-JnI";
-const GID_CONSULTORES = "1717862999";
-const GID_LOJAS = "0";
+const SB_URL = "https://xmkzotgwycvobeqsdpno.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhta3pvdGd3eWN2b2JlcXNkcG5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDU5OTksImV4cCI6MjA5MzkyMTk5OX0.pn7vPIKB9RWOjkTacrMj2H66CCysNM8lh9asmnokEjE";
+
+// Fotos dos consultores (opcional).
+// A chave e o nome em minusculas; o valor, a URL da imagem.
+// Enquanto estiver vazio, aparece a inicial do nome no lugar.
+const FOTOS = {
+  // "gabriel": "https://res.cloudinary.com/.../gabriel.jpg",
+};
 
 // ============================================================
-// FETCH PLANILHA
+// FETCH — API do Supabase
 // ============================================================
-async function fetchSheet(gid) {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
-  const res = await fetch(url);
-  const text = await res.text();
-  const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
-
-  // Monta colunas a partir dos labels
-  const cols = json.table.cols.map((c) => c.label || "");
-
-  const rows = json.table.rows
-    .map((row) => {
-      const obj = {};
-      row.c.forEach((cell, idx) => {
-        const key = cols[idx] || `col${idx}`;
-        if (!cell) { obj[key] = ""; return; }
-        // Sempre usa cell.v (valor bruto) — para % o Google retorna 0.9142, 1.1665 etc.
-        obj[key] = cell.v !== null && cell.v !== undefined ? cell.v : "";
-        // Guarda formatado como fallback para exibição
-        if (cell.f) obj[`_f_${key}`] = cell.f;
-      });
-      return obj;
-    })
-    .filter((row) => Object.values(row).some(v => v !== "" && v !== null));
-
-  console.log(`[Sheet gid=${gid}] ${rows.length} linhas`, rows);
-  return rows;
+async function sb(view) {
+  const res = await fetch(`${SB_URL}/rest/v1/${view}?select=*`, {
+    headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY },
+  });
+  if (!res.ok) throw new Error(`Supabase ${view}: ${res.status}`);
+  return res.json();
 }
 
-// Converte percentual para decimal — Google Sheets já entrega como decimal (0.9142, 1.1665)
-// Mas aceita strings também como fallback ("91,42%" → 0.9142)
+// Converte o retorno em linhas no mesmo formato que a planilha entregava,
+// para que o restante da pagina continue funcionando sem alteracao.
+async function fetchConsultores() {
+  const rows = await sb("v_ranking_publico");
+  return rows.map((r) => ({
+    Consultor: r.nome || "",
+    Loja: r.loja || "",
+    "% Entrega": Number(r.pct_meta || 0) / 100,  // 19.59 -> 0.1959
+    Status: "",
+    Foto: r.foto || FOTOS[String(r.nome || "").trim().toLowerCase()] || "",
+    Vendas: r.vendas || 0,
+    Pontos: r.pontos_avaliacao || 0,
+    Atualizado: r.updated_at || "",
+  }));
+}
+
+async function fetchLojas() {
+  const rows = await sb("v_ranking_lojas_publico");
+  return rows.map((r) => ({
+    Loja: r.loja || "",
+    "% Entrega": Number(r.pct_meta || 0) / 100,
+    Status: "",
+    Foto: r.foto || "",
+    Vendas: r.vendas || 0,
+  }));
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
 function toDecimal(value) {
   if (value === "" || value === null || value === undefined) return 0;
   const n = Number(value);
-  if (!isNaN(n)) return n; // já é decimal: 0.9142 ou 1.1665
-  // fallback string: "91,42%" ou "91.42%"
+  if (!isNaN(n)) return n;
   const str = String(value).replace("%", "").replace(",", ".").trim();
   const parsed = parseFloat(str);
   if (!isNaN(parsed)) return parsed > 1 ? parsed / 100 : parsed;
   return 0;
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
 function getPositionClass(index) {
   if (index === 0) return "gold";
   if (index === 1) return "silver";
@@ -73,32 +85,64 @@ function formatPercent(value) {
   return (d * 100).toFixed(1).replace(".", ",") + "%";
 }
 
-// Debug: loga os dados brutos no console para diagnóstico
-function debugData(label, data) {
-  if (!data || !data.length) return;
-  const keys = Object.keys(data[0]).filter(k => !k.startsWith("_fmt_"));
-  console.group(`[Idealize] ${label} (${data.length} linhas)`);
-  data.forEach((row, i) => {
-    const vals = keys.map(k => `${k}: ${row[k]}`).join(" | ");
-    console.log(`${i+1}. ${vals}`);
-  });
-  console.groupEnd();
-}
-
-// Converte link do Google Drive para URL direta de imagem
 function normalizePhotoUrl(url) {
   if (!url) return "";
-  // Formato: https://drive.google.com/file/d/ID/view → direto
   const driveMatch = url.match(/\/file\/d\/([\w-]+)/);
   if (driveMatch) return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
-  // Formato: ?id=ID
   const idMatch = url.match(/[?&]id=([\w-]+)/);
   if (idMatch) return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
-  // URL direta (outro serviço)
   return url;
 }
 
-// Chave da planilha para buscar foto do consultor por nome
+// Data/hora do ultimo lancamento, no fuso de Sao Paulo
+function formatarAtualizacao(iso) {
+  if (!iso) return { texto: "sem lançamento", dias: 999 };
+  const d = new Date(iso);
+  if (isNaN(d)) return { texto: "sem lançamento", dias: 999 };
+  const texto = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit",
+    hour: "2-digit", minute: "2-digit",
+  }).format(d).replace(", ", " às ");
+  const hoje = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  const dia  = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(d);
+  const dias = Math.round((new Date(hoje) - new Date(dia)) / 86400000);
+  return { texto, dias };
+}
+
+// Minimo de pontos para o bonus: metade das vendas
+function pontosMinimos(vendas) {
+  return Math.ceil(Number(vendas || 0) * 0.5);
+}
+
+// ============================================================
+// MENSAGENS DE DESEMPENHO
+// Faixas: sem lancamento | abaixo de 50% | 50-79% | 80-99% | 100%+
+// ============================================================
+function mensagemConsultor(pct, temLancamento) {
+  if (!temLancamento) return "⚪ Bora começar! O mês está só no início";
+  if (pct >= 1)   return "🔥 Super meta! Você passou do alvo";
+  if (pct >= 0.8) return "🟢 Quase lá! Mais um empurrão e a meta é sua";
+  if (pct >= 0.5) return "🟡 No caminho certo! Mantenha o ritmo";
+  return "🔴 Vamos reagir! Hora de virar o jogo";
+}
+
+function mensagemLoja(pct, temLancamento) {
+  if (!temLancamento) return "⚪ Mês novo, jogo novo. Vamos começar";
+  if (pct >= 1)   return "🔥 Meta batida! Parabéns, time";
+  if (pct >= 0.8) return "🟢 Quase na meta! Último esforço";
+  if (pct >= 0.5) return "🟡 Time no ritmo! Vamos manter";
+  return "🔴 Atenção time! Precisamos reagir";
+}
+
+// Classe visual do chip, na mesma faixa das mensagens
+function classeChip(pct, temLancamento) {
+  if (!temLancamento) return "status-neutro";
+  if (pct >= 1)   return "status-super";
+  if (pct >= 0.8) return "status-bom";
+  if (pct >= 0.5) return "status-medio";
+  return "status-bad";
+}
+
 const _photoMap = {};
 
 function getPhotoByName(nome) {
@@ -112,7 +156,6 @@ function renderPodium(top3) {
   const podium = document.getElementById("podium");
   podium.innerHTML = "";
 
-  // Ordem visual: 2º | 1º | 3º
   const visualOrder = [1, 0, 2];
 
   visualOrder.forEach((dataIdx) => {
@@ -131,6 +174,10 @@ function renderPodium(top3) {
     const heightClass = dataIdx === 0 ? "podium-first" : dataIdx === 1 ? "podium-second" : "podium-third";
     const pct = toDecimal(row[percentKey]);
     const superMeta = pct >= 1;
+    const pontos = Number(row.Pontos || 0);
+    const minPts = pontosMinimos(row.Vendas);
+    const ptsOk = pontos >= minPts;
+    const atz = formatarAtualizacao(row.Atualizado);
 
     const item = document.createElement("div");
     item.className = `podium-item ${posClass} ${heightClass}`;
@@ -147,7 +194,9 @@ function renderPodium(top3) {
       <div class="podium-name">${row[nomeKey] || "-"}</div>
       <div class="podium-store">${row[lojaKey] || ""}</div>
       <div class="podium-pct ${superMeta ? "pct-super" : ""}">${formatPercent(row[percentKey])}</div>
+      <div class="podium-pontos ${ptsOk ? "pts-ok" : "pts-bad"}">${pontos} ${pontos === 1 ? "ponto" : "pontos"}</div>
       ${superMeta ? `<div class="super-meta-badge">🔥 SUPER META</div>` : ""}
+      <div class="podium-atz ${atz.dias <= 1 ? "atz-ok" : atz.dias <= 3 ? "atz-alerta" : "atz-velho"}">${atz.texto}</div>
       <div class="podium-base ${posClass}" data-pos="${dataIdx === 0 ? '1º' : dataIdx === 1 ? '2º' : '3º'}"></div>
     `;
 
@@ -169,13 +218,8 @@ function renderConsultores(data) {
     keys.find((k) => k.toLowerCase().includes("entrega")) || "col4";
   const nomeKey = keys.find((k) => k.toLowerCase().includes("consultor")) || "col0";
   const lojaKey = keys.find((k) => k.toLowerCase().includes("loja")) || "col1";
-  const statusKey = keys.find((k) => k.toLowerCase().includes("status")) || "col5";
   const fotoKey = keys.find((k) => k.toLowerCase().includes("foto")) || "";
 
-  console.log(`[Consultores] percentKey="${percentKey}" nomeKey="${nomeKey}"`);
-  console.log(`[Consultores] valores %:`, data.map(r => ({ nome: r[nomeKey], pct: r[percentKey], dec: toDecimal(r[percentKey]) })));
-
-  // Popula o mapa de fotos por nome
   if (fotoKey) {
     data.forEach((row) => {
       const nome = String(row[nomeKey] || "").trim().toLowerCase();
@@ -185,14 +229,10 @@ function renderConsultores(data) {
   }
 
   const sorted = [...data].sort((a, b) => toDecimal(b[percentKey]) - toDecimal(a[percentKey]));
-
-  // Top 3 vai pro pódio
   const top3 = sorted.slice(0, 3);
   renderPodium(top3);
 
-  // 4º em diante ficam nos cards
   const rest = sorted.slice(3);
-
   if (rest.length === 0) {
     container.innerHTML = `<p class="rest-empty">Apenas os 3 primeiros colocados este período.</p>`;
     return;
@@ -202,9 +242,13 @@ function renderConsultores(data) {
     const realIdx = idx + 3;
     const percent = toDecimal(row[percentKey]);
     const superMeta = percent >= 1;
-    const status = String(row[statusKey] || "").replace(/[\u{1F300}-\u{1FFFF}]/gu, "").replace(/[🔴🟢🟡⚪🔥]/g, "").trim().toLowerCase();
     const photo = getPhotoByName(row[nomeKey]);
     const inicial = (row[nomeKey] || "?")[0].toUpperCase();
+    const pontos = Number(row.Pontos || 0);
+    const minPts = pontosMinimos(row.Vendas);
+    const ptsOk = pontos >= minPts;
+    const atz = formatarAtualizacao(row.Atualizado);
+    const temLancamento = atz.dias !== 999 || percent > 0;
 
     const card = document.createElement("article");
     card.className = `card ${superMeta ? "card-super" : ""}`;
@@ -228,13 +272,20 @@ function renderConsultores(data) {
         <span>Entrega:</span>
         <span><strong class="${superMeta ? "pct-super" : ""}">${formatPercent(row[percentKey])}</strong></span>
       </div>
+      <div class="meta-row meta-row-pontos">
+        <span>Pontos de avaliação:</span>
+        <span><strong class="${ptsOk ? "pts-ok" : "pts-bad"}">${pontos}</strong></span>
+      </div>
       <div class="progress-wrapper">
         <div class="progress-bar-bg">
           <div class="progress-bar-fill ${superMeta ? "bar-super" : ""}" style="width:${Math.min(100, percent * 100)}%;"></div>
         </div>
       </div>
-      <div class="status-chip ${superMeta ? "status-super" : percent >= 1 ? "status-ok" : "status-bad"}">
-        ${superMeta ? "🔥 " : ""}${status || (superMeta ? "super meta!" : percent >= 1 ? "bateu a meta" : "não bateu")}
+      <div class="status-chip ${classeChip(percent, temLancamento)}">
+        ${mensagemConsultor(percent, temLancamento)}
+      </div>
+      <div class="card-atz ${atz.dias <= 1 ? "atz-ok" : atz.dias <= 3 ? "atz-alerta" : "atz-velho"}">
+        Último lançamento: ${atz.texto}
       </div>
     `;
 
@@ -249,11 +300,13 @@ function renderLojas(data) {
   const container = document.getElementById("lojas-list");
   container.innerHTML = "";
 
+  const keys = Object.keys(data[0]).filter(k => !k.startsWith("_f_"));
   const percentKey =
-    Object.keys(data[0]).find((k) => k.toLowerCase().includes("%")) ||
-    Object.keys(data[0]).find((k) => k.toLowerCase().includes("entrega")) || "col3";
-  const lojaKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("loja")) || "col0";
-  const statusKey = Object.keys(data[0]).find((k) => k.toLowerCase().includes("status")) || "col4";
+    keys.find((k) => k.toLowerCase().includes("% entrega")) ||
+    keys.find((k) => k.toLowerCase().includes("%")) ||
+    keys.find((k) => k.toLowerCase().includes("entrega")) || "col3";
+  const lojaKey = keys.find((k) => k.toLowerCase().includes("loja")) || "col0";
+  const fotoKey = keys.find((k) => k.toLowerCase().includes("foto")) || "";
 
   const sorted = [...data].sort((a, b) => toDecimal(b[percentKey]) - toDecimal(a[percentKey]));
 
@@ -261,27 +314,38 @@ function renderLojas(data) {
     const posClass = getPositionClass(idx);
     const posLabel = getPosLabel(idx);
     const percent = toDecimal(row[percentKey]);
-    const status = String(row[statusKey] || "").replace(/[\u{1F300}-\u{1FFFF}]/gu, "").replace(/[🔴🟢🟡⚪]/g, "").trim().toLowerCase();
+    const superMeta = percent >= 1;
+    const temLancamento = percent > 0;
+    const foto = fotoKey ? normalizePhotoUrl(String(row[fotoKey] || "").trim()) : "";
+    const inicial = (row[lojaKey] || "?")[0].toUpperCase();
 
     const card = document.createElement("article");
-    card.className = `card ${posClass}`;
+    card.className = `card ${posClass} ${superMeta ? "card-super" : ""}`;
     card.style.animationDelay = `${idx * 0.05}s`;
 
     card.innerHTML = `
       <div class="card-header">
-        <div class="card-title">${row[lojaKey] || "-"}</div>
+        <div class="card-header-left">
+          ${foto
+            ? `<img class="card-avatar loja-avatar" src="${foto}" alt="${row[lojaKey]}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="card-avatar-placeholder" style="display:none">${inicial}</div>`
+            : `<div class="card-avatar-placeholder">${inicial}</div>`
+          }
+          <div class="card-title">${row[lojaKey] || "-"}</div>
+        </div>
         <div class="badge-pos ${posClass}">${posLabel}</div>
       </div>
       <div class="meta-row">
         <span>Entrega:</span>
-        <span><strong>${formatPercent(row[percentKey])}</strong></span>
+        <span><strong class="${superMeta ? "pct-super" : ""}">${formatPercent(row[percentKey])}</strong></span>
       </div>
       <div class="progress-wrapper">
         <div class="progress-bar-bg">
-          <div class="progress-bar-fill" style="width:${Math.min(140, Math.max(0, percent * 100))}%;"></div>
+          <div class="progress-bar-fill ${superMeta ? "bar-super" : ""}" style="width:${Math.min(100, Math.max(0, percent * 100))}%;"></div>
         </div>
       </div>
-      <div class="status-chip ${percent >= 1 ? "status-ok" : "status-bad"}">${status || (percent >= 1 ? "meta batida" : "abaixo da meta")}</div>
+      <div class="status-chip ${classeChip(percent, temLancamento)}">
+        ${mensagemLoja(percent, temLancamento)}
+      </div>
     `;
 
     container.appendChild(card);
@@ -289,108 +353,67 @@ function renderLojas(data) {
 }
 
 // ============================================================
-// ADMIN MODAL
+// ESTILO DOS PONTOS (injetado aqui para nao alterar o style.css)
 // ============================================================
-function initAdmin() {
-  const overlay = document.getElementById("modalOverlay");
-  const btnAdmin = document.getElementById("btnAdmin");
-  const btnClose = document.getElementById("modalClose");
+function injetarEstiloPontos() {
+  if (document.getElementById("estilo-pontos")) return;
+  const st = document.createElement("style");
+  st.id = "estilo-pontos";
+  st.textContent = `
+    .podium-pontos{
+      margin-top:4px; font-size:12px; font-weight:700;
+      padding:3px 10px; border-radius:99px; display:inline-block;
+    }
+    .podium-pontos.pts-ok { color:#0d7a5c; background:rgba(13,158,117,.16); }
+    .podium-pontos.pts-bad{ color:#b3302f; background:rgba(226,75,74,.14); }
+    .meta-row-pontos{ font-size:13px; }
+    .meta-row-pontos .pts-ok { color:#0d7a5c; }
+    .meta-row-pontos .pts-bad{ color:#b3302f; }
+    .podium-atz{
+      margin-top:6px; font-size:10px; font-weight:600; letter-spacing:.02em;
+    }
+    .card-atz{
+      margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,.07);
+      font-size:11px; font-weight:600;
+    }
+    .atz-ok    { color:#5f6b68; }
+    .atz-alerta{ color:#b07d0a; }
+    .atz-velho { color:#b3302f; }
 
-  btnAdmin.addEventListener("click", () => {
-    overlay.classList.add("open");
-  });
-
-  btnClose.addEventListener("click", () => overlay.classList.remove("open"));
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) overlay.classList.remove("open");
-  });
-
-  // Tabs
-  document.querySelectorAll(".tab-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach((t) => t.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
-    });
-  });
-
-  // Copiar URL webhook
-  const btnCopy = document.getElementById("btnCopyUrl");
-  if (btnCopy) {
-    btnCopy.addEventListener("click", () => {
-      const url = document.getElementById("webhookUrl").textContent;
-      navigator.clipboard.writeText(url).then(() => {
-        btnCopy.textContent = "✅ Copiado!";
-        setTimeout(() => (btnCopy.textContent = "📋 Copiar"), 2000);
-      });
-    });
-  }
-
-  // Simular webhook
-  const btnSim = document.getElementById("btnSimulate");
-  if (btnSim) btnSim.addEventListener("click", simulateWebhook);
-}
-
-// ============================================================
-// SIMULAÇÃO WEBHOOK
-// ============================================================
-function simulateWebhook() {
-  const log = document.getElementById("webhookLog");
-  const names = ["Ana Lima", "Carlos Souza", "Maria Oliveira", "João Pedro"];
-  const stores = ["Loja Centro", "Loja Santos", "Loja Cubatão"];
-  const name = names[Math.floor(Math.random() * names.length)];
-  const store = stores[Math.floor(Math.random() * stores.length)];
-  const value = (Math.random() * 2000 + 200).toFixed(2);
-  const now = new Date().toLocaleTimeString("pt-BR");
-
-  const entry = document.createElement("div");
-  entry.className = "log-entry";
-  entry.innerHTML = `<span class="log-time">${now}</span> <strong>${name}</strong> (${store}) — R$ ${Number(value).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-
-  const empty = log.querySelector(".log-empty");
-  if (empty) empty.remove();
-
-  log.prepend(entry);
-
-  // Máximo 8 entradas
-  while (log.children.length > 8) log.removeChild(log.lastChild);
+    /* Faixas intermediarias das mensagens de desempenho */
+    .status-chip.status-medio{
+      color:#8a6200; background:rgba(244,119,0,.14);
+      border-color:rgba(244,119,0,.28);
+    }
+    .status-chip.status-bom{
+      color:#0d7a5c; background:rgba(22,175,163,.16);
+      border-color:rgba(22,175,163,.30);
+    }
+    .status-chip.status-neutro{
+      color:#5f6b68; background:rgba(23,61,67,.08);
+      border-color:rgba(23,61,67,.14);
+    }
+  `;
+  document.head.appendChild(st);
 }
 
 // ============================================================
 // INIT
 // ============================================================
+async function carregar() {
+  const [consultores, lojas] = await Promise.all([fetchConsultores(), fetchLojas()]);
+  if (consultores && consultores.length) renderConsultores(consultores);
+  if (lojas && lojas.length) renderLojas(lojas);
+}
+
 async function init() {
-  initAdmin();
-
   try {
-    const [consultores, lojas] = await Promise.all([
-      fetchSheet(GID_CONSULTORES),
-      fetchSheet(GID_LOJAS),
-    ]);
-
-    if (consultores && consultores.length) {
-      debugData("CONSULTORES", consultores);
-      renderConsultores(consultores);
-    }
-    if (lojas && lojas.length) {
-      debugData("LOJAS", lojas);
-      renderLojas(lojas);
-    }
-
-    // Atualiza a cada 5 minutos
-    setInterval(async () => {
-      const [c, l] = await Promise.all([
-        fetchSheet(GID_CONSULTORES),
-        fetchSheet(GID_LOJAS),
-      ]);
-      if (c && c.length) renderConsultores(c);
-      if (l && l.length) renderLojas(l);
-    }, 5 * 60 * 1000);
-
+    injetarEstiloPontos();
+    await carregar();
+    // atualiza a cada 2 minutos (antes eram 5, com a planilha)
+    setInterval(() => { carregar().catch(console.error); }, 2 * 60 * 1000);
   } catch (e) {
     console.error(e);
-    alert("Erro ao carregar dados do ranking. Confira se a planilha está pública.");
   }
 }
 
